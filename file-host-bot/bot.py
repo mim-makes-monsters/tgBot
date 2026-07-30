@@ -620,7 +620,16 @@ async def main():
     app.add_handler(MessageHandler(filters.ATTACHMENT, handle_file))
 
     logger.info("Bot started polling...")
-    await app.run_polling(allowed_updates=Update.ALL_TYPES)
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+
+    try:
+        await asyncio.Event().wait()
+    finally:
+        await app.updater.stop()
+        await app.stop()
+        await app.shutdown()
 
 
 if __name__ == "__main__":
