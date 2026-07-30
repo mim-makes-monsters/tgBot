@@ -1,87 +1,48 @@
-# File Host Bot
+# APK Store Bot
 
-A Telegram bot + Web UI that lets you upload files with custom names and serves them via HTTP download links.
+A Telegram bot where admins upload APKs and users browse/download them.
 
-## Features
+## How It Works
 
-- **Telegram Bot** - Upload files via chat with captions as names
-- **Web UI** - Upload/download files from the browser
-- **Admin Panel** - Password-protected dashboard to manage all files
-- **Direct Links** - Every file gets a direct download URL
+- **Admin** uses `/addapp <name>` to add an app, then uploads the APK file
+- **Users** use `/start` to open the APK Store UI with inline buttons
+  - **APK Store** - Browse all apps and download
+  - **Request APK** - Request an app that's not in the store
 
-## Quick Start
+## Setup
+
+1. Create a bot via [@BotFather](https://t.me/BotFather) and get the token.
+2. Get your Telegram user ID (message [@userinfobot](https://t.me/userinfobot)).
+3. Set environment variables and run:
 
 ```bash
-export BOT_TOKEN=your_telegram_bot_token
-export PUBLIC_URL=https://your-domain.com
-export ADMIN_USERNAME=admin
-export ADMIN_PASSWORD=your_secure_password
+export BOT_TOKEN=your_bot_token
+export ADMIN_ID=your_telegram_user_id
 pip install -r requirements.txt
 python bot.py
 ```
 
-## Environment Variables
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `BOT_TOKEN` | Yes | - | Telegram Bot token from @BotFather |
-| `PUBLIC_URL` | Yes | `http://localhost:8000` | Public URL for download links |
-| `ADMIN_USERNAME` | No | `admin` | Admin panel login username |
-| `ADMIN_PASSWORD` | No | `admin123` | Admin panel login password |
-| `PORT` | No | `8000` | HTTP server port |
-| `HOST` | No | `0.0.0.0` | HTTP server bind address |
-
-## Bot Commands
+## Admin Commands
 
 | Command | Description |
 |---------|-------------|
-| `/start` | Welcome message |
-| `/list` | List all uploaded files |
-| `/info <name>` | Get file details and download link |
-| `/delete <name>` | Delete a file |
+| `/addapp <name>` | Add a new app (bot will ask for the APK file) |
+| `/delapp <name>` | Remove an app from the store |
+| `/apps` | List all apps with download counts |
+| `/requests` | View pending APK requests from users |
 
-## Web UI
+## Deploy on justrunmyapp
 
-- **`/`** - Public page: upload files, browse and download all files
-- **`/d/{name}`** - Direct download link for a file
-- **`/admin`** - Admin login
-- **`/admin/panel`** - Admin dashboard: manage all files (upload, delete)
+| Setting | Value |
+|---------|-------|
+| Runtime | Python |
+| Start Command | `python bot.py` |
+| Bot Token | From @BotFather |
+| Admin ID | Your Telegram user ID |
 
-## How to Upload via Telegram
+## Files
 
-Send any file with a **caption**. The caption becomes the file's name.
-
-Example: Send an APK file with caption `myapp-v1.0.apk` -> accessible at `https://your-url/d/myapp-v1.0.apk`
-
-## Free Hosting on justrunmyapp
-
-Since you're using justrunmyapp.com:
-
-1. Zip the project files (excluding `.gitignore`, `data/`, `files/` if empty).
-2. Upload the zip on justrunmyapp.
-3. Set environment variables in their dashboard:
-   - `BOT_TOKEN`
-   - `PUBLIC_URL` = your justrunmyapp assigned URL
-   - `ADMIN_PASSWORD` = a strong password
-4. Set the start command to: `python bot.py`
-5. Port: `8000`
-
-### Other Free Hosting Options
-
-| Host | Notes |
-|------|-------|
-| **Render.com** | Web Service, free tier, spin-down after inactivity |
-| **Koyeb** | Free tier, better uptime than Render |
-| **Fly.io** | 3 free VMs, 256MB RAM each |
-| **Oracle Cloud** | Always-free AMD VM, 24GB RAM, 200GB disk |
-
-## Persistence Note
-
-Most free PaaS have **ephemeral storage** - files are lost on restart. For production use, add S3/Cloudflare R2 or use a VPS (Oracle Cloud free tier).
-
-## Docker
-
-```bash
-docker build -t file-host-bot .
-docker run -e BOT_TOKEN=xxx -e PUBLIC_URL=http://... -e ADMIN_PASSWORD=xxx -p 8000:8000 file-host-bot
-```
+- `bot.py` — Main bot code (no web server needed)
+- `requirements.txt` — Dependencies
+- `data/apps.json` — Stored apps (auto-created)
+- `data/requests.json` — User requests (auto-created)
